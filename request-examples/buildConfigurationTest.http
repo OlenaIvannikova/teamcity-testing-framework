@@ -1,0 +1,82 @@
+### Constants
+@host = 192.168.56.1
+@port = 8111
+@user = admin
+@password = admin
+
+### Hardcoded Data
+@projectId = test_project_1
+@buildTypeId = test_build_type_1
+
+### GET all projects
+GET http://{{user}}:{{password}}@{{host}}:{{port}}/app/rest/projects
+Content-Type: application/json
+Accept: application/json
+###
+
+### Steps for build configuration
+### ******************************
+### Step 1: create project (POST /app/rest/projects)
+#@no-cookie-jar
+POST http://{{user}}:{{password}}@{{host}}:{{port}}/app/rest/projects
+Content-Type: application/json
+Accept: application/json
+
+{
+    "parentProject": {
+        "locator": "_Root"
+    },
+    "name": "{{projectId}}",
+    "id": "{{projectId}}",
+    "copyAllAssociatedSettings": true
+}
+### Step 2: create build type (build configuration) (POST /app/rest/buildTypes)
+#@no-cookie-jar
+POST http://{{user}}:{{password}}@{{host}}:{{port}}/app/rest/buildTypes
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id": "{{buildTypeId}}",
+  "name": "{{buildTypeId}}",
+  "project": {
+    "id": "{{projectId}}"
+  },
+  "parameters": {
+    "property": [
+      {
+        "name": "myBuildParameter",
+        "value": "myValue"
+      }
+    ]
+  },
+  "steps": {
+    "step": [
+      {
+        "name": "myCommandLineStep",
+        "type": "simpleRunner",
+        "properties": {
+          "property": [
+            {
+              "name": "script.content",
+              "value": "echo 'Hello World!'"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
+
+### Step 3: run build
+### need to access the build queue via endpoint POST /app/rest/buildQueue
+#@no-cookie-jar
+POST http://{{user}}:{{password}}@{{host}}:{{port}}/app/rest/buildQueue
+Content-Type: application/json
+Accept: application/json
+
+{
+  "buildType": {
+    "id": "{{buildTypeId}}"
+  }
+}

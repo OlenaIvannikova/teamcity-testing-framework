@@ -9,8 +9,8 @@ public class Request {
      * 1. спецификация (кто делает запрос)
      * 2. эндпоинт (relative URL, model (сущность))
      */
-    private final RequestSpecification spec;
-    private final Endpoint endpoint;
+    protected final RequestSpecification spec;
+    protected final Endpoint endpoint;
 
     public Request(RequestSpecification spec, Endpoint endpoint) {
         this.spec = spec;

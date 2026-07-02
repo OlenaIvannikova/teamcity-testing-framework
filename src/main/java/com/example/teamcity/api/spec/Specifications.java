@@ -22,7 +22,7 @@ public class Specifications {
     Log in as a Super User in TeamCity (access the server):
     empty username +  auto-generated authentication token as the password
      */
-    public static RequestSpecification superUserAuth() {
+    public static RequestSpecification superUserSpec() {
         return requestSpecBuilder()
                 .setBaseUri("http://%s:%s@%s/httpAuth".formatted("", Config.getProperty("superUserToken"), Config.getProperty("host")))
                 .build();

@@ -6,18 +6,18 @@ import com.example.teamcity.api.requests.CheckedRequests;
 import com.example.teamcity.api.spec.Specifications;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-import org.testng.asserts.SoftAssert;
+import org.assertj.core.api.SoftAssertions;
 
 import static com.example.teamcity.api.generators.TestDataGenerator.generate;
 
 public class BaseTest {
-    protected SoftAssert softy;
+    protected SoftAssertions softy;
     protected CheckedRequests superUserCheckRequests = new CheckedRequests(Specifications.superUserSpec());
     protected TestData testData;
 
     @BeforeMethod(alwaysRun = true)
     public void beforeTest() {
-        softy = new SoftAssert();
+        softy = new SoftAssertions();
         testData = generate();
     }
 

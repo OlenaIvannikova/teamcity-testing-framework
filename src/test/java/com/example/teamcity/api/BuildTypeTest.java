@@ -25,11 +25,13 @@ public class BuildTypeTest extends BaseApiTest {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userCheckedRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
 
-        userCheckedRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
+        userCheckedRequests.getRequest(PROJECTS).create(testData.getProject());
         userCheckedRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
 
         var createdBuildType = userCheckedRequests.<BuildType>getRequest(BUILD_TYPES).read(testData.getBuildType().getId());
-        softy.assertEquals(testData.getBuildType().getName(), createdBuildType.getName(), "Build type name is not correct");
+
+        softy.assertThat(testData.getBuildType().getName())
+                .isEqualTo(createdBuildType.getName());
     }
 
     @Test(description = "User should not be able to create two build types with the same id", groups = {"Negative", "CRUD"})

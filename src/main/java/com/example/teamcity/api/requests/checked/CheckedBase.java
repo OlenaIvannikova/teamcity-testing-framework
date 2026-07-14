@@ -4,10 +4,13 @@ import com.example.teamcity.api.enums.Endpoint;
 import com.example.teamcity.api.generators.TestDataStorage;
 import com.example.teamcity.api.models.BaseModel;
 import com.example.teamcity.api.requests.CrudInterface;
+import com.example.teamcity.api.requests.PathParams;
 import com.example.teamcity.api.requests.Request;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
+
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public final class CheckedBase<T extends BaseModel> extends Request implements CrudInterface {
@@ -32,6 +35,18 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
         return createdModel;
     }
 
+    public T create(BaseModel model, PathParams pathParams) {
+        var createdModel = (T) uncheckedBase
+                .create(model, pathParams)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.SC_OK)
+                .extract().as(endpoint.getModelClass());
+
+        TestDataStorage.getStorage().addCreatedEntity(endpoint, createdModel);
+        return createdModel;
+    }
+
     @Override
     public T read(String id) {
         return (T) uncheckedBase
@@ -40,6 +55,26 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
                 .assertThat()
                 .statusCode(HttpStatus.SC_OK)
                 .extract().as(endpoint.getModelClass());
+    }
+
+    @Override
+    public T readByLocator(String locator) {
+        return (T) uncheckedBase
+                .readByLocator(locator)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.SC_OK)
+                .extract().as(endpoint.getModelClass());
+    }
+
+    public String read(Map<String, Object> queryParams) {
+        return uncheckedBase
+                .read(queryParams)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.SC_OK)
+                .extract()
+                .asString();
     }
 
     @Override

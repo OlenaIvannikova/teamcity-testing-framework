@@ -10,11 +10,22 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum Endpoint {
-    BUILD_TYPES("/app/rest/buildTypes", BuildType.class),
-    BUILD_QUEUE("/app/rest/buildQueue", Build.class),
+    USERS("/app/rest/users", User.class),
     PROJECTS("/app/rest/projects", Project.class),
-    USERS("/app/rest/users", User.class);
+    BUILD_TYPES("/app/rest/buildTypes", BuildType.class),
+    BUILD_STEPS("/app/rest/buildTypes/id:%s/steps", Step.class),
+    BUILD_QUEUE("/app/rest/buildQueue", Build.class),
+    BUILDS("/app/rest/builds", Build.class),
+    BUILD_LOG("downloadBuildLog.html", null);
 
     private final String url;
     private final Class<? extends BaseModel> modelClass;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getUrl(Object... params) {
+        return String.format(url, params);
+    }
 }

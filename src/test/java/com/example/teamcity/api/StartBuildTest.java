@@ -1,71 +1,100 @@
 package com.example.teamcity.api;
 
-import com.example.teamcity.api.models.Build;
-import com.example.teamcity.api.requests.unchecked.UncheckedBase;
+import com.example.teamcity.BaseTest;
+import com.example.teamcity.api.models.*;
+import com.example.teamcity.api.requests.CheckedRequests;
+import com.example.teamcity.api.requests.PathParams;
+import com.example.teamcity.api.requests.QueryParams;
+import com.example.teamcity.api.requests.UncheckedRequests;
 import com.example.teamcity.api.spec.Specifications;
-import com.example.teamcity.common.WireMock;
 import io.qameta.allure.Feature;
-import org.apache.http.HttpStatus;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static com.example.teamcity.api.enums.Endpoint.BUILD_QUEUE;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.example.teamcity.api.enums.Endpoint.*;
+import static com.example.teamcity.api.enums.Endpoint.BUILD_TYPES;
 
 
 @Feature("Start build")
-public class StartBuildTest extends BaseApiTest {
+public class StartBuildTest extends BaseTest {
 
-    /*
-    Настраиваем WireMock для мокирования API так, чтобы
-       при POST-запросе на /buildQueue (post(BUILD_QUEUE.getUrl()))
-       возвращался код 200 (успешно) (HttpStatus.SC_OK)
-       и заранее подготовленный в теле ответа JSON fakeBuild
-       с состоянием finished и статусом SUCCESS, имитируя успешный ответ TeamCity
-     */
-    @BeforeMethod(alwaysRun = true)
-    public void setupWireMockServer() {
-        var fakeBuild = Build.builder()
-                .state("finished")
-                .status("SUCCESS")
+    private static final int TIMEOUT = 80_000;
+    private static final long POLL_INTERVAL = 20_000;
+
+    @Test(description = "User should be able to start build", groups = {"Regression"})
+    public void userStartsBuildTest() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        var userCheckedRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
+        var userUncheckedRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
+
+        userCheckedRequests.getRequest(PROJECTS).create(testData.getProject());
+
+        // Создание Build Configuration
+        userCheckedRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
+
+        // Добавление Build Steps в Build Configuration
+        userUncheckedRequests.getRequest(BUILD_STEPS)
+                .create(
+                        testData.getBuildStep(),
+                        PathParams.create().buildTypeId(testData.getBuildType().getId())
+                );
+
+        // Запрос на запуск
+        Build buildQueueRequest = Build.builder()
+                .buildType(
+                        BuildType.builder()
+                                .id(testData.getBuildType().getId())
+                                .build())
                 .build();
 
-        /*
-        Когда приходит POST-запрос на /buildQueue,
-        он не отправляется в настоящий TeamCity,
-        а сразу возвращается подготовленный ответ fakeBuild.
-         */
-        WireMock.setupServer(
-                post(BUILD_QUEUE.getUrl()),
-                HttpStatus.SC_OK,
-                fakeBuild);
-
-    }
-
-    @Test(description = "User should be able to start build (with WireMock)", groups = {"Regression"})
-    public void userStartsBuildWithWireMockTest() {
-        var uncheckedBuildQueueRequest = new UncheckedBase(Specifications.mockSpec(), BUILD_QUEUE);
-
-        /*
-        Это не тот же самый объект fakeBuild, а новый экземпляр Build,
-        заполненный данными из ответа WireMock.
-        */
-        var build = uncheckedBuildQueueRequest.create(Build.builder()
-                        .buildType(testData.getBuildType())
-                        .build())
+        // Запуск Build по уже существующей Build Configuration-> Build попадает в очередь
+        Build queuedBuild = userUncheckedRequests.getRequest(BUILD_QUEUE)
+                .create(buildQueueRequest)
                 .then()
-                .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .as(Build.class);
 
-        softy.assertThat(build.getState())
-                .as("buildState")
-                .isEqualTo("finished");
+        Build finishedBuild = waitUntilFinished(
+                queuedBuild.getId(),
+                userCheckedRequests,
+                TIMEOUT,
+                POLL_INTERVAL);
+
+        softy.assertThat(finishedBuild.getState()).isEqualTo("finished");
+        softy.assertThat(finishedBuild.getStatus()).isEqualTo("SUCCESS");
+
+        String log = superUserCheckRequests.getRequest(BUILD_LOG)
+                .read(QueryParams.create().buildId(finishedBuild.getId()).build());
+
+        softy.assertThat(log).contains("Hello, world!");
     }
 
-    @AfterMethod(alwaysRun = true)
-    public void stopWireMockServer() {
-        WireMock.stopServer();
+    private Build waitUntilFinished(String buildId,
+                                    CheckedRequests requests,
+                                    int timeout,
+                                    long interval) {
+
+        long deadline = System.currentTimeMillis() + timeout;
+
+        while (System.currentTimeMillis() < deadline) {
+
+            Build build = requests
+                    .<Build>getRequest(BUILDS)
+                    .read(buildId);
+
+            if ("finished".equals(build.getState())) {
+                return build;
+            }
+
+            try {
+                Thread.sleep(interval);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Waiting for build was interrupted.", e);
+            }
+        }
+
+        throw new AssertionError(
+                "Build " + buildId + " did not finish within " + timeout + " ms.");
     }
+
 }

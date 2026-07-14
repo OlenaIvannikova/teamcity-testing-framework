@@ -16,4 +16,5 @@ public class Step extends BaseModel {
     private String name;
     @Builder.Default
     private String type = "simpleRunner";
+    private Properties properties;
 }

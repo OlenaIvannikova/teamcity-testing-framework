@@ -29,7 +29,9 @@ public class Specifications {
     }
 
     public static RequestSpecification unauthSpec() {
-        return requestSpecBuilder().build();
+        return requestSpecBuilder()
+                .setBaseUri("http://%s:%s@%s".formatted("", "", Config.getProperty("host")))
+                .build();
     }
 
     public static RequestSpecification authSpec(User user) {

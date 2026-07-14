@@ -8,12 +8,10 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Build extends BaseModel {
-    private String id;
-    private BuildType buildType;
-    private String state;
-    private String status;
+public class Property {
+    private String name;
+    private String value;
 }

@@ -4,9 +4,8 @@ import com.example.teamcity.api.models.BuildType;
 import com.example.teamcity.api.models.Project;
 import com.example.teamcity.api.requests.CheckedRequests;
 import com.example.teamcity.api.requests.UncheckedRequests;
+import com.example.teamcity.api.spec.ResponseSpecifications;
 import com.example.teamcity.api.spec.Specifications;
-import org.apache.http.HttpStatus;
-import org.hamcrest.Matchers;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
@@ -28,7 +27,7 @@ public class BuildTypeTest extends BaseApiTest {
         userCheckedRequests.getRequest(PROJECTS).create(testData.getProject());
         userCheckedRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
 
-        var createdBuildType = userCheckedRequests.<BuildType>getRequest(BUILD_TYPES).read(testData.getBuildType().getId());
+        var createdBuildType = userCheckedRequests.<BuildType>getRequest(BUILD_TYPES).read("id:" + testData.getBuildType().getId());
 
         softy.assertThat(testData.getBuildType().getName())
                 .isEqualTo(createdBuildType.getName());
@@ -47,9 +46,7 @@ public class BuildTypeTest extends BaseApiTest {
                 .getRequest(BUILD_TYPES)
                 .create(buildTypeWithSameId)
                 .then()
-                .assertThat()
-                .statusCode(HttpStatus.SC_BAD_REQUEST)
-                .body(Matchers.containsString("The build configuration / template ID \"%s\" is already used by another configuration or template".formatted(testData.getBuildType().getId())));
+                .spec(ResponseSpecifications.duplicateBuildTypeId(testData.getBuildType().getId()));
     }
 
     @Test(description = "Project admin should be able to create build type for their project", groups = {"Positive", "Roles"})

@@ -79,7 +79,7 @@ public class StartBuildTest extends BaseTest {
 
             Build build = requests
                     .<Build>getRequest(BUILDS)
-                    .read(buildId);
+                    .read("id:" + buildId);
 
             if ("finished".equals(build.getState())) {
                 return build;

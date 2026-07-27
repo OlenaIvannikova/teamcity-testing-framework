@@ -9,8 +9,8 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>26</maven.compiler.source>
-        <maven.compiler.target>26</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <testng.version>7.10.2</testng.version>
         <rest-assured.version>5.5.5</rest-assured.version>
@@ -19,6 +19,7 @@
         <jackson.version>2.17.2</jackson.version>
         <wiremock.version>3.9.1</wiremock.version>
         <assertj.version>3.27.6</assertj.version>
+        <selenide.version>7.4.3</selenide.version>
     </properties>
 
     <dependencies>
@@ -70,6 +71,11 @@
             <artifactId>assertj-core</artifactId>
             <version>${assertj.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.codeborne</groupId>
+            <artifactId>selenide</artifactId>
+            <version>${selenide.version}</version>
         </dependency>
     </dependencies>
 </project>

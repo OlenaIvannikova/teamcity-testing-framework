@@ -48,9 +48,9 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
     }
 
     @Override
-    public T read(String id) {
+    public T read(String locator) {
         return (T) uncheckedBase
-                .read(id)
+                .read(locator)
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.SC_OK)
@@ -58,9 +58,9 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
     }
 
     @Override
-    public T readByLocator(String locator) {
+    public T read() {
         return (T) uncheckedBase
-                .readByLocator(locator)
+                .read()
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.SC_OK)
@@ -78,9 +78,9 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
     }
 
     @Override
-    public T update(String id, BaseModel model) {
+    public T update(String locator, BaseModel model) {
         return (T) uncheckedBase
-                .update(id, model)
+                .update(locator, model)
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.SC_OK)
@@ -88,9 +88,9 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
     }
 
     @Override
-    public Object delete(String id) {
+    public Object delete(String locator) {
         return uncheckedBase
-                .delete(id)
+                .delete(locator)
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.SC_OK)

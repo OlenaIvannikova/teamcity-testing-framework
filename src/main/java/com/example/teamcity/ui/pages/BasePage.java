@@ -11,6 +11,7 @@ import java.util.function.Function;
 // Родитель всех Page Object
 public abstract class BasePage {
     protected static final Duration BASE_WAITING = Duration.ofSeconds(50);
+    protected static final Duration LONG_WAITING = Duration.ofMinutes(3);
 
     /*
     ElementCollection: SelenideElement 1, SelenideElement 2 и т.д.

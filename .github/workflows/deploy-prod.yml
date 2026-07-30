@@ -1,0 +1,17 @@
+name: Deploy to production
+
+on: workflow_call
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy backend to production
+        run: echo Происходит деплой бекенда
+
+  deploy-stage:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy frontend to production
+        run: echo Происходит деплой фронтенда

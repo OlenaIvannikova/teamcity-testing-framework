@@ -1,5 +1,6 @@
 package com.example.teamcity.api;
 
+import com.example.teamcity.api.locator.Locator;
 import com.example.teamcity.api.models.BuildType;
 import com.example.teamcity.api.models.Project;
 import com.example.teamcity.api.requests.CheckedRequests;
@@ -27,7 +28,7 @@ public class BuildTypeTest extends BaseApiTest {
         userCheckedRequests.getRequest(PROJECTS).create(testData.getProject());
         userCheckedRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
 
-        var createdBuildType = userCheckedRequests.<BuildType>getRequest(BUILD_TYPES).read("id:" + testData.getBuildType().getId());
+        var createdBuildType = userCheckedRequests.<BuildType>getRequest(BUILD_TYPES).read(Locator.byId(testData.getBuildType().getId()));
 
         softy.assertThat(testData.getBuildType().getName())
                 .isEqualTo(createdBuildType.getName());

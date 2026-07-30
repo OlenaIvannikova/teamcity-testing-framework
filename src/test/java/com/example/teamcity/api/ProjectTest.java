@@ -1,5 +1,6 @@
 package com.example.teamcity.api;
 
+import com.example.teamcity.api.locator.Locator;
 import com.example.teamcity.api.models.Project;
 import com.example.teamcity.api.models.User;
 import com.example.teamcity.api.requests.CheckedRequests;
@@ -23,7 +24,7 @@ public class ProjectTest extends BaseApiTest {
 
         userCheckedRequests.getRequest(PROJECTS).create(testData.getProject());
 
-        var createdProject = userCheckedRequests.<Project>getRequest(PROJECTS).read("id:" + testData.getProject().getId());
+        var createdProject = userCheckedRequests.<Project>getRequest(PROJECTS).read(Locator.byId(testData.getProject().getId()));
 
         softy.assertThat(testData.getProject().getName())
                 .isEqualTo(createdProject.getName());
@@ -118,7 +119,7 @@ public class ProjectTest extends BaseApiTest {
 
         userCheckedRequests.getRequest(PROJECTS).create(project);
 
-        var createdProject = userCheckedRequests.<Project>getRequest(PROJECTS).read("id:" + testData.getProject().getId());
+        var createdProject = userCheckedRequests.<Project>getRequest(PROJECTS).read(Locator.byId(testData.getProject().getId()));
 
         softy.assertThat(testData.getProject().getName())
                 .isEqualTo(createdProject.getName());
@@ -131,7 +132,7 @@ public class ProjectTest extends BaseApiTest {
 
         userCheckedRequests.getRequest(PROJECTS).create(testData.getProject());
 
-        var createdProject = userCheckedRequests.<Project>getRequest(PROJECTS).read("name:" + testData.getProject().getName());
+        var createdProject = userCheckedRequests.<Project>getRequest(PROJECTS).read(Locator.byName(testData.getProject().getName()));
 
         softy.assertThat(testData.getProject().getName())
                 .isEqualTo(createdProject.getName());

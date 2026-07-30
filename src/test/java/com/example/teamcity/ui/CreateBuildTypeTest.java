@@ -1,6 +1,7 @@
 package com.example.teamcity.ui;
 
 import com.example.teamcity.api.enums.Endpoint;
+import com.example.teamcity.api.locator.Locator;
 import com.example.teamcity.api.models.BuildType;
 import com.example.teamcity.api.models.BuildTypes;
 import com.example.teamcity.api.models.Project;
@@ -27,7 +28,7 @@ public class CreateBuildTypeTest extends BaseUITest {
                 .shouldBeCreated();
 
         // проверка состояния API (корректность отправки данных с UI на API)
-        var createdBuildType = superUserCheckRequests.<BuildType>getRequest(Endpoint.BUILD_TYPES).read("name:" + testData.getBuildType().getName());
+        var createdBuildType = superUserCheckRequests.<BuildType>getRequest(Endpoint.BUILD_TYPES).read(Locator.byName(testData.getBuildType().getName()));
         softy.assertThat(createdBuildType).isNotNull();
 
         // проверка состояния UI (корректность считывания данных и отображение данных на UI)

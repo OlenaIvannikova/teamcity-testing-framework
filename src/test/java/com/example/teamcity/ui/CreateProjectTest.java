@@ -2,6 +2,7 @@ package com.example.teamcity.ui;
 
 import com.codeborne.selenide.Condition;
 import com.example.teamcity.api.enums.Endpoint;
+import com.example.teamcity.api.locator.Locator;
 import com.example.teamcity.api.models.Project;
 import com.example.teamcity.ui.pages.ProjectPage;
 import com.example.teamcity.ui.pages.ProjectsPage;
@@ -20,13 +21,13 @@ public class CreateProjectTest extends BaseUITest {
         loginAsNewUser();
 
         // взаимодействие с UI
-        CreateProjectPage.open("_Root")
+        CreateProjectPage.open()
                 .createForm(REPO_URL)
                 .setupProject(testData.getProject().getName(), testData.getBuildType().getName());
 
         // проверка состояния API
         // (корректность отправки данных с UI на API)
-        var createdProject = superUserCheckRequests.<Project>getRequest(Endpoint.PROJECTS).read("name:" + testData.getProject().getName());
+        var createdProject = superUserCheckRequests.<Project>getRequest(Endpoint.PROJECTS).read(Locator.byName(testData.getProject().getName()));
         softy.assertThat(createdProject).isNotNull();
 
         // проверка состояния UI

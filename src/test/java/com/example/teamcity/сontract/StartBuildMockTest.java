@@ -1,6 +1,8 @@
 package com.example.teamcity.сontract;
 
 import com.example.teamcity.api.BaseApiTest;
+import com.example.teamcity.api.enums.BuildState;
+import com.example.teamcity.api.enums.BuildStatus;
 import com.example.teamcity.api.models.Build;
 import com.example.teamcity.api.models.BuildType;
 import com.example.teamcity.api.requests.CheckedRequests;
@@ -32,8 +34,8 @@ public class StartBuildMockTest extends BaseApiTest {
     @BeforeMethod(alwaysRun = true)
     public void setupWireMockServer() {
         var fakeBuild = Build.builder()
-                .state("finished")
-                .status("SUCCESS")
+                .state(BuildState.FINISHED.getValue())
+                .status(BuildStatus.SUCCESS.getValue())
                 .build();
 
         /*
@@ -73,8 +75,8 @@ public class StartBuildMockTest extends BaseApiTest {
                 .extract()
                 .as(Build.class);
 
-        softy.assertThat(build.getState()).isEqualTo("finished");
-        softy.assertThat(build.getStatus()).isEqualTo("SUCCESS");
+        softy.assertThat(build.getState()).isEqualTo(BuildState.FINISHED.getValue());
+        softy.assertThat(build.getStatus()).isEqualTo(BuildStatus.SUCCESS.getValue());
     }
 
     @AfterMethod(alwaysRun = true)

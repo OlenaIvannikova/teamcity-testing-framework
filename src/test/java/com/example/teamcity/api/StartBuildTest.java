@@ -1,6 +1,9 @@
 package com.example.teamcity.api;
 
 import com.example.teamcity.BaseTest;
+import com.example.teamcity.api.enums.BuildState;
+import com.example.teamcity.api.enums.BuildStatus;
+import com.example.teamcity.api.locator.Locator;
 import com.example.teamcity.api.models.*;
 import com.example.teamcity.api.requests.CheckedRequests;
 import com.example.teamcity.api.requests.PathParams;
@@ -59,8 +62,8 @@ public class StartBuildTest extends BaseTest {
                 TIMEOUT,
                 POLL_INTERVAL);
 
-        softy.assertThat(finishedBuild.getState()).isEqualTo("finished");
-        softy.assertThat(finishedBuild.getStatus()).isEqualTo("SUCCESS");
+        softy.assertThat(finishedBuild.getState()).isEqualTo(BuildState.FINISHED.getValue());
+        softy.assertThat(finishedBuild.getStatus()).isEqualTo(BuildStatus.SUCCESS.getValue());
 
         String log = superUserCheckRequests.getRequest(BUILD_LOG)
                 .read(QueryParams.create().buildId(finishedBuild.getId()).build());
@@ -79,9 +82,9 @@ public class StartBuildTest extends BaseTest {
 
             Build build = requests
                     .<Build>getRequest(BUILDS)
-                    .read("id:" + buildId);
+                    .read(Locator.byId(buildId));
 
-            if ("finished".equals(build.getState())) {
+            if (BuildState.FINISHED.getValue().equals(build.getState())) {
                 return build;
             }
 

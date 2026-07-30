@@ -20,7 +20,7 @@ public class StartBuildTest extends BaseTest {
     private static final int TIMEOUT = 80_000;
     private static final long POLL_INTERVAL = 20_000;
 
-    @Test(description = "User should be able to start build", groups = {"Regression"})
+    @Test(description = "User should be able to start build")
     public void userStartsBuildTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userCheckedRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));

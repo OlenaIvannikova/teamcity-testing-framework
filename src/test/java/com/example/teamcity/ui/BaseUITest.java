@@ -31,8 +31,7 @@ public class BaseUITest extends BaseTest {
                 "selenoid:options",
                 Map.of(
                         "enableVNC", true, //Разрешить подключение к браузеру через VNC -> позволяет видеть браузер в режиме реального времени
-                        "enableLog", true,     // Сохранять лог браузерной сессии
-                        "enableVideo", true
+                        "enableLog", true     // Сохранять лог браузерной сессии
                 )
         );
     }

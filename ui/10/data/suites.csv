@@ -1,0 +1,6 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","19026","User should be able to create build type","Surefire suite","2026-07-30","passed","2026-07-30","com.example.teamcity.ui.CreateBuildTypeTest","Surefire test","com.example.teamcity.ui.CreateBuildTypeTest","userCreatesBuildTypeTest"
+"","11549","User should not be able to create build type without name","Surefire suite","2026-07-30","passed","2026-07-30","com.example.teamcity.ui.CreateBuildTypeTest","Surefire test","com.example.teamcity.ui.CreateBuildTypeTest","userCreatesBuildTypeWithoutNameTest"
+"","54965","User should be able to create project","Surefire suite","2026-07-30","failed","2026-07-30","com.example.teamcity.ui.CreateProjectTest","Surefire test","com.example.teamcity.ui.CreateProjectTest","userCreatesProjectTest"
+"","51","User should not be able to create project without name","Surefire suite","2026-07-30","passed","2026-07-30","com.example.teamcity.ui.CreateProjectTest","Surefire test","com.example.teamcity.ui.CreateProjectTest","userCreatesProjectWithoutNameTest"
+"","43162","setupTeamCityServerTest","Surefire suite","2026-07-30","passed","2026-07-30","com.example.teamcity.ui.SetupServerTest","Surefire test","com.example.teamcity.ui.SetupServerTest","setupTeamCityServerTest"

@@ -21,6 +21,7 @@
         <assertj.version>3.27.6</assertj.version>
         <selenide.version>7.4.3</selenide.version>
         <swagger-coverage-version>1.5.0</swagger-coverage-version>
+        <awaitility.version>4.3.0</awaitility.version>
     </properties>
 
     <dependencies>
@@ -98,6 +99,11 @@
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-java-commons</artifactId>
             <version>${allure.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>${awaitility.version}</version>
         </dependency>
     </dependencies>
 </project>

@@ -9,11 +9,17 @@ import com.example.teamcity.api.requests.Request;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
+import org.awaitility.Awaitility;
 
+import java.time.Duration;
 import java.util.Map;
+import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public final class CheckedBase<T extends BaseModel> extends Request implements CrudInterface {
+
+    private static final Duration WAIT_TIMEOUT = Duration.ofSeconds(30);
+    private static final Duration POLL_INTERVAL = Duration.ofSeconds(1);
 
     private final UncheckedBase uncheckedBase;
 
@@ -95,5 +101,13 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
                 .assertThat()
                 .statusCode(HttpStatus.SC_OK)
                 .extract().asString();
+    }
+
+    public T waitFor(String locator) {
+        return Awaitility.await()
+                .atMost(WAIT_TIMEOUT)
+                .pollInterval(POLL_INTERVAL)
+                .ignoreExceptions()
+                .until(() -> read(locator), Objects::nonNull);
     }
 }

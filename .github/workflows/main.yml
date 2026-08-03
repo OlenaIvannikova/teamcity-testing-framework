@@ -1,8 +1,9 @@
 name: TeamCity deployment
 
 on:
+  workflow_dispatch:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: '*/15 * * * *'
 
 jobs:
   # Собирается бекенд и деплоится на стейдж/review app

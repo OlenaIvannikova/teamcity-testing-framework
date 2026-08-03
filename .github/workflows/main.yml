@@ -1,6 +1,8 @@
 name: TeamCity deployment
 
-on: push
+on:
+  schedule:
+    - cron: "*/15 * * * *"
 
 jobs:
   # Собирается бекенд и деплоится на стейдж/review app

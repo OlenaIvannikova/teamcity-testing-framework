@@ -14,6 +14,7 @@ import org.testng.annotations.BeforeSuite;
 import java.util.Map;
 
 import static com.example.teamcity.api.enums.Endpoint.USERS;
+import static io.qameta.allure.Allure.step;
 
 public class BaseUITest extends BaseTest {
 
@@ -54,8 +55,16 @@ public class BaseUITest extends BaseTest {
     }
 
     protected User createUser() {
-        User user = testData.getUser();
-        superUserCheckRequests.getRequest(USERS).create(user);
-        return user;
+        return step(
+                "Create user",
+                () -> {
+                    var user = testData.getUser();
+                    superUserCheckRequests
+                            .getRequest(USERS)
+                            .create(user);
+                    return user;
+                }
+        );
     }
 }
+

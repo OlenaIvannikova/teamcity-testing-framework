@@ -19,6 +19,7 @@ import static com.example.teamcity.api.enums.Endpoint.BUILD_TYPES;
 
 @Feature("Start build")
 public class StartBuildTest extends BaseTest {
+    private static final String EXPECTED_LOG_MESSAGE = "Hello, world!";
 
     private static final int TIMEOUT = 80_000;
     private static final long POLL_INTERVAL = 20_000;
@@ -68,7 +69,7 @@ public class StartBuildTest extends BaseTest {
         String log = superUserCheckRequests.getRequest(BUILD_LOG)
                 .read(QueryParams.create().buildId(finishedBuild.getId()).build());
 
-        softy.assertThat(log).contains("Hello, world!");
+        softy.assertThat(log).contains(EXPECTED_LOG_MESSAGE);
     }
 
     private Build waitUntilFinished(String buildId,

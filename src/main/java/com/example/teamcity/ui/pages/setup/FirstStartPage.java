@@ -6,6 +6,7 @@ import com.codeborne.selenide.SelenideElement;
 import com.example.teamcity.ui.pages.BasePage;
 
 import static com.codeborne.selenide.Selenide.$;
+import static io.qameta.allure.Allure.step;
 
 public class FirstStartPage extends BasePage {
     private final SelenideElement restoreButton = $("#restoreButton");
@@ -19,16 +20,25 @@ public class FirstStartPage extends BasePage {
     }
 
     public static FirstStartPage open() {
+        step("Open first start page");
         return Selenide.open("/", FirstStartPage.class);
     }
 
     public FirstStartPage setupFirstStart() {
+        step("Proceed to database setup");
         proceedButton.click();
+
+        step("Select database type");
         dbTypeSelect.shouldBe(Condition.visible, LONG_WAITING);
         proceedButton.click();
+
+        step("Accept license agreement");
         acceptLicenseCheckbox.should(Condition.exist, LONG_WAITING).scrollTo().click();
+
+        step("Submit first start setup");
         submitButton.click();
         return this;
     }
 
 }
+

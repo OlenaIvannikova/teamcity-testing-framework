@@ -22,26 +22,37 @@ public class BuildTypeTest extends BaseApiTest {
 
     @Test(description = "User should be able to create build type", groups = {"Positive", "CRUD"})
     public void userCreatesBuildTypeTest() {
+        step("Create user");
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userCheckedRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
 
+        step("Create project");
         userCheckedRequests.getRequest(PROJECTS).create(testData.getProject());
+
+        step("Create build type");
         userCheckedRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
 
+        step("Get build type details by build type id");
         var createdBuildType = userCheckedRequests.<BuildType>getRequest(BUILD_TYPES).read(Locator.byId(testData.getBuildType().getId()));
 
+        step("Verify build type name");
         softy.assertThat(testData.getBuildType().getName())
                 .isEqualTo(createdBuildType.getName());
     }
 
     @Test(description = "User should not be able to create two build types with the same id", groups = {"Negative", "CRUD"})
     public void userCreatesTwoBuildTypesWithTheSameIdTest() {
+        step("Create user");
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userCheckedRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
 
+        step("Create project");
         userCheckedRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
+
+        step("Create build type");
         userCheckedRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
 
+        step("Verify build type creation is rejected with duplicate ID");
         var buildTypeWithSameId = generate(Arrays.asList(testData.getProject()), BuildType.class, testData.getBuildType().getId());
         new UncheckedRequests(Specifications.authSpec(testData.getUser()))
                 .getRequest(BUILD_TYPES)
@@ -74,3 +85,4 @@ public class BuildTypeTest extends BaseApiTest {
         step("Check buildType was not created with forbidden code");
     }
 }
+

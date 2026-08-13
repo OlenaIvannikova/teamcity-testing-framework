@@ -22,43 +22,80 @@ public class BuildTypeTest extends BaseApiTest {
 
     @Test(description = "User should be able to create build type", groups = {"Positive", "CRUD"})
     public void userCreatesBuildTypeTest() {
-        step("Create user");
-        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
-        var userCheckedRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
+        var userCheckedRequests = step(
+                "Create user",
+                () -> {
+                    superUserCheckRequests
+                            .getRequest(USERS)
+                            .create(testData.getUser());
 
-        step("Create project");
-        userCheckedRequests.getRequest(PROJECTS).create(testData.getProject());
+                    return new CheckedRequests(
+                            Specifications.authSpec(testData.getUser())
+                    );
+                }
+        );
 
-        step("Create build type");
-        userCheckedRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
+        step("Create project",
+                () -> userCheckedRequests
+                        .<Project>getRequest(PROJECTS)
+                        .create(testData.getProject())
+        );
 
-        step("Get build type details by build type id");
-        var createdBuildType = userCheckedRequests.<BuildType>getRequest(BUILD_TYPES).read(Locator.byId(testData.getBuildType().getId()));
+        step("Create build type",
+                () -> userCheckedRequests
+                        .getRequest(BUILD_TYPES)
+                        .create(testData.getBuildType())
+        );
 
-        step("Verify build type name");
-        softy.assertThat(testData.getBuildType().getName())
-                .isEqualTo(createdBuildType.getName());
+        var createdBuildType = step("Get build type details by build type id",
+                () -> userCheckedRequests
+                        .<BuildType>getRequest(BUILD_TYPES)
+                        .read(Locator.byId(testData.getBuildType().getId()))
+        );
+
+        step("Verify build type name",
+                () -> softy.assertThat(testData.getBuildType().getName())
+                        .isEqualTo(createdBuildType.getName()));
     }
 
     @Test(description = "User should not be able to create two build types with the same id", groups = {"Negative", "CRUD"})
     public void userCreatesTwoBuildTypesWithTheSameIdTest() {
-        step("Create user");
-        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
-        var userCheckedRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
 
-        step("Create project");
-        userCheckedRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
+        var userCheckedRequests = step(
+                "Create user",
+                () -> {
+                    superUserCheckRequests
+                            .getRequest(USERS)
+                            .create(testData.getUser());
 
-        step("Create build type");
-        userCheckedRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
+                    return new CheckedRequests(
+                            Specifications.authSpec(testData.getUser())
+                    );
+                }
+        );
 
-        step("Verify build type creation is rejected with duplicate ID");
-        var buildTypeWithSameId = generate(Arrays.asList(testData.getProject()), BuildType.class, testData.getBuildType().getId());
-        new UncheckedRequests(Specifications.authSpec(testData.getUser()))
-                .getRequest(BUILD_TYPES)
-                .create(buildTypeWithSameId)
-                .then()
-                .spec(ResponseSpecifications.duplicateBuildTypeId(testData.getBuildType().getId()));
+        step("Create project",
+                () -> userCheckedRequests
+                        .<Project>getRequest(PROJECTS)
+                        .create(testData.getProject())
+        );
+
+        step("Create build type",
+                () -> userCheckedRequests
+                        .getRequest(BUILD_TYPES)
+                        .create(testData.getBuildType())
+        );
+
+        step("Verify build type creation is rejected with duplicate ID",
+                () -> {
+                    var buildTypeWithSameId = generate(Arrays.asList(testData.getProject()), BuildType.class, testData.getBuildType().getId());
+                    new UncheckedRequests(Specifications.authSpec(testData.getUser()))
+                            .getRequest(BUILD_TYPES)
+                            .create(buildTypeWithSameId)
+                            .then()
+                            .spec(ResponseSpecifications.duplicateBuildTypeId(testData.getBuildType().getId()));
+                }
+        );
     }
 
     @Test(description = "Project admin should be able to create build type for their project", groups = {"Positive", "Roles"})

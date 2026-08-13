@@ -19,35 +19,41 @@ public class CreateProjectTest extends BaseUITest {
     public void userCreatesProjectTest() {
 
         // подготовка окружения
-        step("Login as new user");
-        loginAsNewUser();
+        step(
+                "Login as new user",
+                () -> loginAsNewUser()
+        );
 
         // взаимодействие с UI
-        step("Create project through UI");
-        CreateProjectPage.open()
-                .createForm(REPO_URL)
-                .setupProject(testData.getProject().getName(), testData.getBuildType().getName());
+        step("Create project through UI",
+                () -> CreateProjectPage.open()
+                        .createForm(REPO_URL)
+                        .setupProject(testData.getProject().getName(), testData.getBuildType().getName())
+        );
 
         // Проверка состояния API (корректность отправки данных с UI на API)
         // Проверяем через API- если объект не найден, дальнейшая UI-проверка не имеет смысла.
-        step("Verify project is created through API");
-        var createdProject = superUserCheckRequests
-                .<Project>getRequest(Endpoint.PROJECTS)
-                .waitFor(Locator.byName(testData.getProject().getName()));
+        var createdProject = step("Verify project is created through API",
+                () -> superUserCheckRequests
+                        .<Project>getRequest(Endpoint.PROJECTS)
+                        .waitFor(Locator.byName(testData.getProject().getName()))
+        );
 
         assertThat(createdProject).isNotNull();
 
         // проверка состояния UI
         // (корректность считывания данных и отображение данных на UI)
-        step("Verify project details on project page");
-        ProjectPage.open(createdProject.getId())
-                .title.shouldHave(Condition.exactText(testData.getProject().getName()));
+        step("Verify project details on project page",
+                () -> ProjectPage.open(createdProject.getId())
+                        .title.shouldHave(Condition.exactText(testData.getProject().getName()))
+        );
 
-        step("Verify project is displayed in projects list");
-        var foundProjects = ProjectsPage.open()
-                .getProjects()
-                .stream()
-                .anyMatch(project -> project.getName().text().equals(testData.getProject().getName()));
+        var foundProjects = step("Verify project is displayed in projects list",
+                () -> ProjectsPage.open()
+                        .getProjects()
+                        .stream()
+                        .anyMatch(project -> project.getName().text().equals(testData.getProject().getName()))
+        );
 
         softy.assertThat(foundProjects).isTrue();
     }
